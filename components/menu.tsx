@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet,Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
@@ -14,6 +14,7 @@ const Menu = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
     return (
+        //list of buttons to navigate to different services
         <View style={styles.container}>
             <View style={[styles.verticallySpaced, styles.mt20]}>
                 <Button
@@ -30,7 +31,7 @@ const Menu = () => {
             <View style={[styles.verticallySpaced, styles.mt20]}>
                 <Button
                     title="Service 3"
-                    onPress={() => { }} />
+                    onPress={() => Alert.alert('Service 3','Coming soon!')}/>
             </View>
         </View>
     );
