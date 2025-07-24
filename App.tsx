@@ -27,7 +27,7 @@ export default function App() {
   }, [])
   return (
     <NavigationContainer>
-      {session && session.user ? (
+      {session && session.user ? ( // If session exists and user is logged in
         <Stack.Navigator>
             <Stack.Screen name="Root" options={{ headerShown: false }}>
               {() => (
