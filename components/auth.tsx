@@ -68,13 +68,14 @@ AppState.addEventListener('change', (state) => {
             placeholder="Password"
             autoCapitalize={'none'}
             />
-        </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Button title="Sign in" disabled={loading} onPress={() => signInWithEmail()} />
-        </View>
-        <View style={styles.verticallySpaced}>
-            <Button title="Sign up" disabled={loading} onPress={() => signUpWithEmail()} />
-        </View>
+            </View>
+            <View style={[styles.verticallySpaced, styles.mt20]}>
+                <Button title="Sign in" disabled={loading} onPress={() => signInWithEmail()} />
+            </View>
+            <View style={styles.verticallySpaced}>
+                <Button title="Sign up" disabled={loading} onPress={() => signUpWithEmail()} />
+            </View>
+
         </View>
     )
 }
@@ -82,7 +83,7 @@ AppState.addEventListener('change', (state) => {
 const styles = StyleSheet.create({
     container: {
         marginTop: 40,
-        padding: 12,
+        padding: 2,
     },
     verticallySpaced: {
         paddingTop: 4,
