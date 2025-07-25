@@ -11,6 +11,8 @@ import Menu from './components/menu'
 import Ongoing from './components/ongoing'
 import Taxi from './components/taxiService/taxiHomePage';
 import Delivery from './components/deliveryService/deliveryService';
+import AccountSettings from './components/SettingsScreen';
+import ConfirmDeletion from './components/confirmDeletionScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -42,6 +44,14 @@ export default function App() {
             </Stack.Screen>
             <Stack.Screen name="Taxi" component={Taxi} />
             <Stack.Screen name="Delivery" component={Delivery} />
+            <Stack.Screen name="Settings">
+              {() => <AccountSettings session={session} />}
+            </Stack.Screen>
+            <Stack.Screen
+              name="ConfirmDeletion"
+              component={ConfirmDeletion}
+              options={{ title: 'Confirm Account Deletion' }}
+            />
         </Stack.Navigator>
       ) : (
         <View>

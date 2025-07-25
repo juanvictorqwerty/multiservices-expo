@@ -39,6 +39,11 @@ AppState.addEventListener('change', (state) => {
         } = await supabase.auth.signUp({
         email: email,
         password: password,
+        options: {
+            data: {
+                username: email.split('@')[0], // Provide a default username
+            },
+        },
         })
 
         if (error) Alert.alert(error.message)

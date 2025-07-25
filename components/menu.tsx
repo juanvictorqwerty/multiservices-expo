@@ -2,13 +2,7 @@ import React from 'react';
 import { View, Text, Button, StyleSheet,Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-
-// Define the type for the navigation parameters
-type RootStackParamList = {
-    Root: undefined;
-    Taxi: undefined;
-    Delivery: undefined;
-};
+import { RootStackParamList } from '../lib/navigationTypes';
 
 const Menu = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
