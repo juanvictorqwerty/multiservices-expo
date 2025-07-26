@@ -60,7 +60,11 @@ const AccountSettings = ({ session }: { session: Session }) => {
             setShowEmailForm(false);
         } catch (error) {
             if (error instanceof Error) {
-                Alert.alert('Error', error.message);
+                if (error.message.includes("For security purposes, you can't reuse this email")) {
+                    Alert.alert('Email already in use', 'This email address is already registered with another account.');
+                } else {
+                    Alert.alert('Error', error.message);
+                }
             }
         } finally {
             setLoading(false);
