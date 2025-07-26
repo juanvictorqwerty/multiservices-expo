@@ -15,6 +15,8 @@ import Delivery from './components/deliveryService/deliveryService';
 import AccountSettings from './components/SettingsScreen';
 import ConfirmDeletion from './components/confirmDeletionScreen';
 import ResetPasswordScreen from './components/ResetPasswordScreen';
+import SignUpScreen from './components/SignUpScreen';
+import WelcomeScreen from './components/welcomeScreen';
 import { RootStackParamList } from './lib/navigationTypes';
 
 
@@ -78,7 +80,11 @@ export default function App() {
             <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{ title: 'Reset Password' }} />
         </>
         ) : (
-          <Stack.Screen name="Auth" component={Auth} options={{ headerShown: false }} />
+          <>
+            <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Auth" component={Auth} options={{ headerShown: false }} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} options={{ title: 'Create Account' }} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,64 +1,41 @@
 import React, { useState } from 'react'
-import { Alert, StyleSheet, View, AppState, Platform } from 'react-native'
+import { Alert, StyleSheet, View, AppState, TouchableOpacity, Platform, KeyboardAvoidingView, ScrollView } from 'react-native'
 import { supabase } from '../lib/supabase'
-import { Button, Input } from '@rneui/themed'
-import * as Linking from 'expo-linking';
+import { Button, Input, Icon, Text } from '@rneui/themed'
+import { useNavigation } from '@react-navigation/native'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { RootStackParamList } from '../lib/navigationTypes'
+import * as Linking from 'expo-linking'
 
-// Tells Supabase Auth to continuously refresh the session automatically if
-// the app is in the foreground. When this is added, you will continue to receive
-// `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
-// if the user's session is terminated. This should only be registered once.
-if (Platform.OS !== 'web') {
-    AppState.addEventListener('change', (state) => {
-        if (state === 'active') {
-            supabase.auth.startAutoRefresh()
-        } else {
-            supabase.auth.stopAutoRefresh()
-        }
-        })
-}
+// If you are using Supabase JS v2+, auto-refresh is handled automatically.
+// Remove manual startAutoRefresh/stopAutoRefresh unless you are using a custom setup.
+// If you need to handle session refresh manually, consult the Supabase docs for your client version.
 
-    export default function Auth() {
+type AuthScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Auth'>;
+
+export default function Auth() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
+    const navigation = useNavigation<AuthScreenNavigationProp>();
 
     async function signInWithEmail() {
         setLoading(true)
         const { error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
+            email: email,
+            password: password,
         })
 
         if (error) Alert.alert(error.message)
         setLoading(false)
     }
 
-    async function signUpWithEmail() {
-        setLoading(true)
-        const {
-        data: { session },
-        error,
-        } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-            data: {
-                username: email.split('@')[0], // Provide a default username
-            },
-        },
-        })
-
-        if (error) {
-            if (error.message.includes('rate limit')) {
-                Alert.alert('Too many requests', 'You have tried to sign up too many times. Please wait a while before trying again.');
-            } else {
-                Alert.alert('Sign up failed', error.message);
-            }
-        } else if (!session) {
-            Alert.alert('Confirmation required', 'Please check your inbox for email verification!');
+    function handleSignUp() {
+        if (!email) {
+            Alert.alert('Please enter your email to sign up');
+            return;
         }
-        setLoading(false)
+        navigation.navigate('SignUp', { email });
     }
 
     async function forgotPassword() {
@@ -83,52 +60,150 @@ if (Platform.OS !== 'web') {
     }
 
     return (
-        <View style={styles.container}>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Input
-            label="Email"
-            leftIcon={{ type: 'font-awesome', name: 'envelope' }}
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-            placeholder="email@address.com"
-            autoCapitalize={'none'}
-            />
-        </View>
-        <View style={styles.verticallySpaced}>
-            <Input
-            label="Password"
-            leftIcon={{ type: 'font-awesome', name: 'lock' }}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            secureTextEntry={true}
-            placeholder="Password"
-            autoCapitalize={'none'}
-            />
-            </View>
-            <View style={[styles.verticallySpaced, styles.mt20]}>
-                <Button title="Sign in" disabled={loading} onPress={() => signInWithEmail()} />
-            </View>
-            <View style={styles.verticallySpaced}>
-                <Button title="Sign up" disabled={loading} onPress={() => signUpWithEmail()} />
-            </View>
-            <View style={styles.verticallySpaced}>
-                <Button title="Forgot Password?" onPress={forgotPassword} disabled={loading} />
-            </View>
-        </View>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.header}>
+                    <Text style={styles.title}>Welcome Back!</Text>
+                    <Text style={styles.subtitle}>Sign in to access your account</Text>
+                </View>
+
+                <View style={styles.formContainer}>
+                    <Input
+                        placeholder="email@address.com"
+                        label="Email"
+                        onChangeText={setEmail}
+                        value={email}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        leftIcon={<Icon type="font-awesome" name="envelope" color="#86939e" />}
+                        inputContainerStyle={styles.inputContainer}
+                        inputStyle={styles.inputText}
+                    />
+
+                    <Input
+                        placeholder="Password"
+                        label="Password"
+                        onChangeText={setPassword}
+                        value={password}
+                        secureTextEntry
+                        autoCapitalize="none"
+                        leftIcon={<Icon type="font-awesome" name="lock" color="#86939e" />}
+                        inputContainerStyle={styles.inputContainer}
+                        inputStyle={styles.inputText}
+                    />
+
+                    <TouchableOpacity onPress={forgotPassword} disabled={loading || !email} style={styles.forgotPasswordContainer}>
+                        <Text style={[styles.forgotPasswordText, (!email || loading) && styles.disabledText]}>
+                            Forgot Password?
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <Button
+                    title={loading ? 'Signing In...' : 'Sign In'}
+                    onPress={signInWithEmail}
+                    disabled={loading}
+                    buttonStyle={styles.signInButton}
+                    titleStyle={styles.signInButtonTitle}
+                    containerStyle={styles.buttonContainer}
+                    loading={loading}
+                />
+
+                <View style={styles.footer}>
+                    <Text style={styles.footerText}>Don't have an account? </Text>
+                    <TouchableOpacity onPress={handleSignUp} disabled={loading}>
+                        <Text style={styles.signUpText}>Sign Up</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 40,
-        padding: 2,
+        flex: 1,
+        backgroundColor: '#f8f9fa',
     },
-    verticallySpaced: {
-        paddingTop: 4,
-        paddingBottom: 4,
-        alignSelf: 'stretch',
+    scrollContainer: {
+        flexGrow: 1,
+        justifyContent: 'center',
+        paddingHorizontal: 24,
     },
-    mt20: {
+    header: {
+        alignItems: 'center',
+        marginBottom: 40,
+    },
+    title: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#212529',
+    },
+    subtitle: {
+        fontSize: 16,
+        color: '#6c757d',
+        marginTop: 8,
+    },
+    formContainer: {
+        width: '100%',
+    },
+    inputContainer: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        borderBottomWidth: 0,
+        paddingHorizontal: 10,
+        elevation: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+    },
+    inputText: {
+        fontSize: 16,
+        color: '#495057',
+    },
+    forgotPasswordContainer: {
+        alignSelf: 'flex-end',
+        marginBottom: 8,
+        marginTop: -8,
+        marginRight: 10,
+    },
+    forgotPasswordText: {
+        color: '#007AFF',
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    disabledText: {
+        color: '#adb5bd',
+    },
+    buttonContainer: {
         marginTop: 20,
+        width: '100%',
+    },
+    signInButton: {
+        backgroundColor: '#007AFF',
+        borderRadius: 10,
+        paddingVertical: 14,
+    },
+    signInButtonTitle: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    footer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 24,
+    },
+    footerText: {
+        fontSize: 14,
+        color: '#6c757d',
+    },
+    signUpText: {
+        fontSize: 14,
+        color: '#007AFF',
+        fontWeight: 'bold',
     },
 })
