@@ -50,13 +50,6 @@ export default function Account({ session }: { session: Session }) {
     return (
         <View style={styles.container}>
             <View style={styles.verticallySpaced}>
-                <Input label="Username" value={username || ''} onChangeText={(text) => setUsername(text)} />
-            </View>
-            <View style={styles.verticallySpaced}>
-                <Input label="Website" value={website || ''} onChangeText={(text) => setWebsite(text)} />
-            </View>
-
-            <View style={styles.verticallySpaced}>
                 <Button
                     title="Settings"
                     onPress={() => navigation.navigate('Settings')}

@@ -9,9 +9,11 @@ import { Session } from '@supabase/supabase-js';
  * See: https://reactnavigation.org/docs/typescript/
  */
 export type RootStackParamList = {
+    Auth: undefined;
     Root: undefined;
     Taxi: undefined;
     Delivery: undefined;
     Settings: undefined;
     ConfirmDeletion: undefined;
+    ResetPassword: undefined;
 };

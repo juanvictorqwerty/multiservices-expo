@@ -51,6 +51,24 @@ AppState.addEventListener('change', (state) => {
         setLoading(false)
     }
 
+    async function forgotPassword() {
+        if (!email) {
+            Alert.alert('Missing Email', 'Please enter your email address to reset your password.');
+            return;
+        }
+        setLoading(true);
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: 'com.anonymous.multiservicesexpo://reset-password',
+        });
+
+        if (error) {
+            Alert.alert('Error', error.message);
+        } else {
+            Alert.alert('Check your email', 'A password reset link has been sent.');
+        }
+        setLoading(false);
+    }
+
     return (
         <View style={styles.container}>
         <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -80,7 +98,9 @@ AppState.addEventListener('change', (state) => {
             <View style={styles.verticallySpaced}>
                 <Button title="Sign up" disabled={loading} onPress={() => signUpWithEmail()} />
             </View>
-
+            <View style={styles.verticallySpaced}>
+                <Button title="Forgot Password?" onPress={forgotPassword} disabled={loading} />
+            </View>
         </View>
     )
 }
