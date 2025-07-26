@@ -33,8 +33,8 @@ const Menu = () => {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 40,
-        padding: 12,
+        marginTop: 45,
+        padding: 15,
     },
     verticallySpaced: {
         paddingTop: 4,
