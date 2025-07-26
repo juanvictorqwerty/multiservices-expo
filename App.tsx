@@ -56,7 +56,7 @@ export default function App() {
   }, [])
 
   const RootTabs = () => (
-    <Tab.Navigator>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Menu" component={Menu} />
       <Tab.Screen name="Ongoing" component={Ongoing} />
       <Tab.Screen name="Account">
@@ -69,14 +69,14 @@ export default function App() {
     <NavigationContainer ref={navigationRef} linking={linking} fallback={<Text>Loading...</Text>}>
       <Stack.Navigator>
         {session && session.user ? (
-        <Stack.Navigator>
+        <>
             <Stack.Screen name="Root" component={RootTabs} options={{ headerShown: false }} />
             <Stack.Screen name="Taxi" component={Taxi} />
             <Stack.Screen name="Delivery" component={Delivery} />
             <Stack.Screen name="Settings">{() => <AccountSettings session={session!} />}</Stack.Screen>
             <Stack.Screen name="ConfirmDeletion" component={ConfirmDeletion} options={{ title: 'Confirm Account Deletion' }} />
             <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{ title: 'Reset Password' }} />
-        </Stack.Navigator>
+        </>
         ) : (
           <Stack.Screen name="Auth" component={Auth} options={{ headerShown: false }} />
         )}

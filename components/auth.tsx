@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
-import { Alert, StyleSheet, View, AppState } from 'react-native'
+import { Alert, StyleSheet, View, AppState, Platform } from 'react-native'
 import { supabase } from '../lib/supabase'
 import { Button, Input } from '@rneui/themed'
+import * as Linking from 'expo-linking';
 
 // Tells Supabase Auth to continuously refresh the session automatically if
 // the app is in the foreground. When this is added, you will continue to receive
 // `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
 // if the user's session is terminated. This should only be registered once.
-AppState.addEventListener('change', (state) => {
-    if (state === 'active') {
-        supabase.auth.startAutoRefresh()
-    } else {
-        supabase.auth.stopAutoRefresh()
-    }
-    })
+if (Platform.OS !== 'web') {
+    AppState.addEventListener('change', (state) => {
+        if (state === 'active') {
+            supabase.auth.startAutoRefresh()
+        } else {
+            supabase.auth.stopAutoRefresh()
+        }
+        })
+}
 
     export default function Auth() {
     const [email, setEmail] = useState('')
@@ -46,8 +49,15 @@ AppState.addEventListener('change', (state) => {
         },
         })
 
-        if (error) Alert.alert(error.message)
-        if (!session) Alert.alert('Please check your inbox for email verification!')
+        if (error) {
+            if (error.message.includes('rate limit')) {
+                Alert.alert('Too many requests', 'You have tried to sign up too many times. Please wait a while before trying again.');
+            } else {
+                Alert.alert('Sign up failed', error.message);
+            }
+        } else if (!session) {
+            Alert.alert('Confirmation required', 'Please check your inbox for email verification!');
+        }
         setLoading(false)
     }
 
@@ -57,8 +67,11 @@ AppState.addEventListener('change', (state) => {
             return;
         }
         setLoading(true);
+        const redirectTo = Platform.OS === 'web'
+            ? Linking.createURL('reset-password')
+            : 'com.anonymous.multiservicesexpo://reset-password';
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'com.anonymous.multiservicesexpo://reset-password',
+            redirectTo: redirectTo,
         });
 
         if (error) {

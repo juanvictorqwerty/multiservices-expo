@@ -60,7 +60,6 @@ export default function ConfirmDeletionScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Delete Account</Text>
             <Text style={styles.warning}>
                 Warning: This action is permanent and cannot be undone. All your data will be deleted.
             </Text>
@@ -87,13 +86,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
     },
     warning: {
         color: 'red',
